@@ -1,0 +1,12 @@
+<Context>
+
+<Resource name="DBPool"
+          auth="Container"
+          type="javax.sql.DataSource"
+          username="root"
+          password="1234"
+          driverClassName="com.mysql.jdbc.Driver"
+          url="jdbc:mysql://localhost:3306/POS?createDatabaseIfNotExist=true"
+          maxTotal="10"
+          maxIdle="8"/>
+</Context>
