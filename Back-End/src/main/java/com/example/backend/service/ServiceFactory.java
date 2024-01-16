@@ -3,6 +3,7 @@ package com.example.backend.service;
 import com.example.backend.service.impl.CustomerServiceImpl;
 import com.example.backend.service.impl.ItemServiceImpl;
 import com.example.backend.service.impl.LoginServiceImpl;
+import com.example.backend.service.impl.OrderServiceImpl;
 
 public class ServiceFactory {
     private static ServiceFactory serviceFactory;
@@ -26,6 +27,8 @@ public class ServiceFactory {
                 return new CustomerServiceImpl();
             case ITEM:
                 return new ItemServiceImpl();
+            case ORDER:
+                return new OrderServiceImpl();
             default:
                 return null;
         }

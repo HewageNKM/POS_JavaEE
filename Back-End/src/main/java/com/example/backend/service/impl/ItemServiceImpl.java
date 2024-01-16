@@ -16,7 +16,9 @@ public class ItemServiceImpl implements ItemService<ItemDTO> {
     @Override
     public boolean save(ItemDTO dto) throws SQLException, NamingException {
         if (dto.getId() != null && dto.getName() != null && dto.getQty() != 0 && dto.getPrice() != 0.0) {
-            return itemDAO.save(new Item(dto.getId(), dto.getName(), dto.getPrice(),dto.getQty()));
+            Item item = new Item(dto.getId(), dto.getName(), dto.getPrice(),dto.getQty());
+            System.out.println("item = " + item);
+            return itemDAO.save(item);
         } else {
             return false;
         }

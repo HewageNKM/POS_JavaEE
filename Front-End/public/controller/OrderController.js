@@ -16,17 +16,35 @@ function loadIds() {
     const today = new Date().toISOString().split('T')[0];
     $('#OrderDate').val(today)
     $.ajax({
-        url: '/ids',
+        url: 'http://localhost:8080/api/item?volume=all',
+        headers: {
+            Origin: 'http://localhost:5000/orderForm.html'
+        },
         type: 'GET',
         success: function (data) {
-            console.log(data.itemIds);
-            items = data.itemIds;
-            customers = data.customerIds;
-            data.itemIds.forEach(function (item) {
-                $('#itemId').append('<option value="' + item._id + '">' + item._id.toUpperCase() + '</option>');
+            console.log(data);
+            data = JSON.parse(data);
+            items = data;
+            data.forEach(function (item) {
+                $('#itemId').append('<option value="' + item.id + '">' + item.id.toUpperCase() + '</option>');
             });
-            data.customerIds.forEach(function (customer) {
-                $('#customerId').append('<option value="' + customer._id + '">' + customer._id.toUpperCase() + '</option>');
+        },
+        error: function (xhr, status, error) {
+            console.log(error);
+        }
+    })
+    $.ajax({
+        url: 'http://localhost:8080/api/customer?volume=all',
+        type: 'GET',
+        headers: {
+            Origin: 'http://localhost:5000/orderForm.html'
+        },
+        success: function (data) {
+            console.log(data);
+            data = JSON.parse(data);
+            customers = data;
+            data.forEach(function (customer) {
+                $('#customerId').append('<option value="' + customer.id + '">' + customer.id.toUpperCase() + '</option>');
             });
         },
         error: function (xhr, status, error) {
@@ -38,7 +56,7 @@ function loadIds() {
 $('#customerId').on('change', function () {
     const customerId = $('#customerId').val();
     customers.forEach(function (customer) {
-        if (customerId === customer._id) {
+        if (customerId === customer.id) {
             $("#customerName").val(customer.name);
             $('#address').val(customer.address);
             $('#salary').val(customer.salary);
@@ -52,7 +70,7 @@ $('#customerId').on('change', function () {
 $('#itemId').on('change', function () {
     const itemId = $('#itemId').val();
     items.forEach(function (item) {
-        if (itemId === item._id) {
+        if (itemId === item.id) {
             $("#item").val(item.name);
             $('#price').val(item.price);
             $('#qtyOnHand').val(item.qty);
@@ -94,11 +112,11 @@ $('#addBtn').on('click', function () {
     } else {
         const itemId = $('#itemId').val();
         const item = $('#item').val();
-        const orderQty = $('#orderQty').val();
-        const price = $('#price').val();
+        const orderQty = parseInt($('#orderQty').val());
+        const price = parseFloat($('#price').val());
         const total = orderQty * price;
         const row = '<tr><td>' + itemId.toUpperCase() + '</td><td>' + item + '</td><td>' + price + '</td><td>' + orderQty + '</td><td>' + total + '</td></tr>';
-        orderItems = orderItems.concat({
+        orderItems.push({
             item_id: itemId.toLowerCase(),
             item_name: item,
             item_price: price,
@@ -113,7 +131,7 @@ $('#addBtn').on('click', function () {
         $('#qtyOnHand').val('');
         $('#itemId').focus();
         items.forEach(function (item) {
-            if (item._id === itemId.toLowerCase()) {
+            if (item.id === itemId.toLowerCase()) {
                 item.qty = item.qty - orderQty;
             }
         });
@@ -168,16 +186,18 @@ $('#purchaseBtn').on('click', function () {
     const res = confirm('Do you want to purchase this order?');
     if (res) {
         const order = {
-            _id: id.toLowerCase(),
+            id: id.toLowerCase(),
             customer_id: $('#customerId').val().toLowerCase(),
             items: orderItems,
-            order_total: $('#subTotal').val(),
-            discount: $('#discount').val(),
-            order_date: $('#OrderDate').val()
+            order_total: parseFloat($('#subTotal').val()),
+            discount: parseFloat($('#discount').val()),
         }
-        console.log(order);
+        console.log(JSON.stringify(order));
         $.ajax({
-            url: '/orders',
+            url: 'http://localhost:8080/api/order',
+            headers: {
+                Origin: 'http://localhost:5000/orderForm.html'
+            },
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(order),
@@ -211,3 +231,5 @@ $('#purchaseBtn').on('click', function () {
         })
     }
 });
+loadIds();
+loadOrderId();

@@ -3,6 +3,7 @@ package com.example.backend.dao;
 import com.example.backend.dao.impl.CustomerDAOImpl;
 import com.example.backend.dao.impl.ItemDAOImpl;
 import com.example.backend.dao.impl.LoginDAOImpl;
+import com.example.backend.dao.impl.OrderDAOImpl;
 import com.example.backend.dao.interfaces.CustomerDAO;
 
 
@@ -28,6 +29,8 @@ public class DAOFactory {
                 return new CustomerDAOImpl();
             case ITEM:
                 return new ItemDAOImpl();
+            case ORDER:
+                return new OrderDAOImpl();
             default:
                 return null;
         }

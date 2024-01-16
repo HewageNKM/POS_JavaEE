@@ -6,9 +6,11 @@ $('#itemSaveButton').on('click', function () {
         let itemPrice = $("#item-Price").val();
         $.ajax({
             method: "POST",
-            url: "/items",
+            url: "http://localhost:8080/api/item",
             contentType: "application/json",
-            async: true,
+            headers: {
+                Origin: 'http://localhost:5000/itemForm.html'
+            },
             data: JSON.stringify({
                 id: itemCode,
                 name: itemName,
@@ -20,14 +22,10 @@ $('#itemSaveButton').on('click', function () {
                 resetFld();
             },
             error: function (error) {
-                console.error(error);
-                switch (error.responseText) {
-                    case '11000':
-                        alert("Customer ID already exists");
-                        break;
-                    default:
-                        alert("Something went wrong");
-                        break;
+                if (error.status === 500) {
+                    alert("Item ID already exists");
+                } else {
+                    alert("Something went wrong");
                 }
             }
         });
@@ -61,7 +59,7 @@ $('#price').on('keyup', function () {
 });
 
 function setFld(response) {
-    $('#itemId').val(response._id.toUpperCase());
+    $('#itemId').val(response.id.toUpperCase());
     $('#itemName').val(response.name);
     $('#qtyOnHand').val(response.qty);
     $('#price').val(response.price);
@@ -75,14 +73,21 @@ $('#btnItemSearchButton').on('click', function () {
     if (validateId("#inputItemSearch")) {
         let val = $('#itemCombo').val();
         $.ajax({
-            url: "/items/" + $('#inputItemSearch').val().toLowerCase(),
+            url: "http://localhost:8080/api/item?id=" + $('#inputItemSearch').val().toLowerCase()+"&volume=single",
             type: "GET",
+            headers: {
+                Origin: 'http://localhost:5000/itemForm.html'
+            },
             success: function (response) {
+                response = JSON.parse(response);
                 setFld(response);
             },
             error: function (error) {
-                console.error(error.responseText);
-                alert('Error While Getting Item Details')
+                if (error.status === 404) {
+                    alert("Not Found");
+                } else {
+                    alert("Something went wrong");
+                }
             }
         });
     } else {
@@ -101,9 +106,13 @@ $('#updateBtn').on('click', function () {
         let itemPrice = $("#price").val();
         $.ajax({
             method: "PUT",
-            url: "/items/" + itemId.toLowerCase(),
+            headers: {
+                Origin: 'http://localhost:5000/itemForm.html'
+            },
+            url: "http://localhost:8080/api/item",
             contentType: "application/json",
             data: JSON.stringify({
+                id: itemId,
                 name: itemName,
                 qty: itemQty,
                 price: itemPrice
@@ -114,13 +123,10 @@ $('#updateBtn').on('click', function () {
             },
             error: function (error) {
                 console.error(error);
-                switch (error.responseText) {
-                    case '11000':
-                        alert("Customer ID already exists");
-                        break;
-                    default:
-                        alert("Something went wrong");
-                        break;
+                if (error.status === 404) {
+                    alert("Item Not Found");
+                } else {
+                    alert("Something went wrong");
                 }
             }
         });
@@ -162,7 +168,10 @@ $('#deleteBtn').on('click', function () {
     let itemId = $("#itemId").val().toLowerCase();
     $.ajax({
         method: "DELETE",
-        url: "/items/" + itemId.toLowerCase(),
+        headers: {
+            Origin: 'http://localhost:5000/itemForm.html'
+        },
+        url: "http://localhost:8080/api/item?id=" + itemId,
         contentType: "application/json",
         success: function (response) {
             loadItemTable();
@@ -245,12 +254,13 @@ function loadItemTable() {
     $('#tblItem').empty();
     $.ajax({
         method: "GET",
-        url: "/items",
+        url: "http://localhost:8080/api/item?volume=all",
         async: true,
         success: function (response) {
+            response = JSON.parse(response);
             response.forEach(function (item) {
-                let row = `<tr class="table_row" data-id="${item._id.toUpperCase()}" data-name="${item.name}" data-price="${item.price}" data-qty="${item.qty}">
-                                <td>${item._id.toUpperCase()}</td>
+                let row = `<tr class="table_row" data-id="${item.id.toUpperCase()}" data-name="${item.name}" data-price="${item.price}" data-qty="${item.qty}">
+                                <td>${item.id.toUpperCase()}</td>
                                 <td>${item.name}</td>
                                 <td>${item.qty}</td>
                                 <td>${item.price}</td>
@@ -259,7 +269,7 @@ function loadItemTable() {
                 $("#tblItem tr").on("click", function () {
                     const row = $(this);
                     const response = {
-                        _id: row.data("id"),
+                        id: row.data("id"),
                         name: row.data("name"),
                         qty: row.data("qty"),
                         price: row.data("price")
@@ -277,3 +287,4 @@ function loadItemTable() {
 $('#inputItemSearch').on('keyup', function () {
     validateId("#inputItemSearch");
 });
+loadItemTable()

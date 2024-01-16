@@ -1,6 +1,6 @@
 package com.example.backend.dao.impl;
 
-import com.example.backend.dao.interfaces.CustomerDAO;
+import com.example.backend.dao.interfaces.ItemDAO;
 import com.example.backend.db.DBSource;
 import com.example.backend.entity.Item;
 
@@ -11,9 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class ItemDAOImpl implements CustomerDAO<Item> {
+public class ItemDAOImpl implements ItemDAO<Item> {
     @Override
     public boolean save(Item entity) throws SQLException, NamingException {
+        System.out.println("entity = " + entity);
         Connection connection = DBSource.getInstance().getConnection();
         PreparedStatement pst = connection.prepareStatement("SELECT * FROM item WHERE ID=?");
         pst.setObject(1, entity.getId());
