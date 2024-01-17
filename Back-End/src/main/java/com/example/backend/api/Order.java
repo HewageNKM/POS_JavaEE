@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static com.example.backend.service.ServiceFactory.ServiceType.ORDER;
 
@@ -33,8 +34,9 @@ public class Order extends HttpServlet {
                     break;
                 case "single":
                     String id = req.getParameter("id");
-                    Order byId = (Order) orderService.findById(new OrderDTO(id, null, null, 0.0, 0));
-                    System.out.println("Order = " + byId);
+                    System.out.println(id);
+                    ArrayList<Order> byId = orderService.findById(new OrderDTO(id, null, null, 0.0, 0));
+                    System.out.println(byId);
                     if (byId != null) {
                         resp.getWriter().println(gson.toJson(byId));
                     } else {
@@ -49,17 +51,28 @@ public class Order extends HttpServlet {
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doPut(req, resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
         try {
             OrderDTO orderDTO = gson.fromJson(req.getReader(), OrderDTO.class);
             boolean save = orderService.save(orderDTO);
             if (save) {
                 resp.getWriter().println(HttpServletResponse.SC_CREATED);
+            } else {
+                resp.getWriter().println(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) {
+        try {
+            String id = req.getParameter("id");
+            boolean delete = orderService.delete(new OrderDTO(id, null, null, 0.0, 0));
+            if (delete) {
+                resp.getWriter().println(HttpServletResponse.SC_OK);
             } else {
                 resp.getWriter().println(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }

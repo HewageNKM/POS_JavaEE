@@ -2,6 +2,7 @@ package com.example.backend.service.impl;
 
 import com.example.backend.dto.OrderDTO;
 import com.example.backend.dto.OrderItemsDTO;
+import com.example.backend.entity.Customer;
 import com.example.backend.entity.Order;
 import com.example.backend.entity.OrderItems;
 import com.example.backend.service.interfaces.OrderService;
@@ -37,17 +38,21 @@ public class OrderServiceImpl implements OrderService<OrderDTO> {
 
     @Override
     public boolean delete(OrderDTO dto) throws SQLException, NamingException {
-        return false;
+        if (dto.getId() != null) {
+            String id = dto.getId();
+            return orderDAO.delete(id);
+        }else {
+            return false;
+        }
     }
 
     @Override
-    public Object findById(OrderDTO dto) throws SQLException, NamingException {
+    public ArrayList findById(OrderDTO dto) throws SQLException, NamingException {
         if (dto.getId() != null) {
-           orderDAO.findById(new Order(dto.getId(), null, null, 0.0, 0.0, null));
+           return orderDAO.findById(new Order(dto.getId(), null, null, 0.0, 0.0, null));
         } else {
             return null;
         }
-        return null;
     }
 
     @Override

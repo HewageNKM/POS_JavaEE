@@ -65,25 +65,48 @@ public class OrderDAOImpl implements OrderDAO<Order> {
     }
 
     @Override
-    public boolean delete(Order entity) throws SQLException, NamingException {
-        return false;
+    public boolean delete(String id) throws SQLException, NamingException {
+        Connection connection = DBSource.getInstance().getConnection();
+        connection.setAutoCommit(false);
+        try {
+            PreparedStatement pst = connection.prepareStatement("DELETE FROM orders WHERE ID=?");
+            pst.setString(1, id);
+            boolean delete = pst.executeUpdate() > 0;
+            if (delete) {
+                pst = connection.prepareStatement("DELETE FROM order_details WHERE order_id=?");
+                pst.setString(1, id);
+                delete = pst.executeUpdate() > 0;
+                if (!delete) {
+                    connection.rollback();
+                    return false;
+                }
+            } else {
+                connection.rollback();
+                return false;
+            }
+        }finally {
+            connection.setAutoCommit(true);
+        }
+        return true;
     }
 
     @Override
-    public Order findById(Order entity) throws SQLException, NamingException {
+    public ArrayList findById(Order entity) throws SQLException, NamingException {
         Connection connection = DBSource.getInstance().getConnection();
-        PreparedStatement pst = connection.prepareStatement("SELECT orders.ID, customer.Name, orders.order_total, orders.discount, orders.date  FROM orders LEFT JOIN customer on orders.CID = customer.id WHERE orders.ID=?");
+        PreparedStatement pst = connection.prepareStatement("SELECT orders.ID, customer.Name, orders.order_total, orders.discount, orders.date  FROM orders LEFT JOIN customer on orders.CID = customer.id WHERE customer.ID=?");
         pst.setString(1, entity.getId());
         ResultSet resultSet = pst.executeQuery();
-        Order order = new Order();
-        if (resultSet.next()) {
+        ArrayList<Order> orders = new ArrayList<>();
+        while (resultSet.next()) {
+            Order order = new Order();
             order.setId(resultSet.getString(1));
             order.setCustomer_id(resultSet.getString(2));
             order.setOrder_total(resultSet.getDouble(3));
             order.setDiscount(resultSet.getDouble(4));
             order.setDate(resultSet.getDate(5).toLocalDate());
+            orders.add(order);
         }
-        return order;
+        return orders;
     }
 
     @Override
@@ -102,5 +125,10 @@ public class OrderDAOImpl implements OrderDAO<Order> {
             orders.add(order);
         }
         return orders;
+    }
+
+    @Override
+    public boolean testDelete(Order entity) throws SQLException, NamingException {
+        return false;
     }
 }
