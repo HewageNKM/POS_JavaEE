@@ -21,7 +21,31 @@ public class Order extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.doGet(req, resp);
+        try {
+            String volume = req.getParameter("volume");
+            switch (volume){
+                case "all":
+                    try {
+                        resp.getWriter().println(gson.toJson(orderService.findAll()));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                    break;
+                case "single":
+                    String id = req.getParameter("id");
+                    Order byId = (Order) orderService.findById(new OrderDTO(id, null, null, 0.0, 0));
+                    System.out.println("Order = " + byId);
+                    if (byId != null) {
+                        resp.getWriter().println(gson.toJson(byId));
+                    } else {
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    }
+                    break;
+            }
+        }catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

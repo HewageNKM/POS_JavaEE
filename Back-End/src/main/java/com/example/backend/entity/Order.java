@@ -1,6 +1,5 @@
 package com.example.backend.entity;
 
-import com.example.backend.dto.OrderItemsDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -21,6 +19,6 @@ public class Order {
     private List<OrderItems> items;
     private double order_total;
     private double discount;
-    private LocalDateTime date;
+    private LocalDate date;
 }
 

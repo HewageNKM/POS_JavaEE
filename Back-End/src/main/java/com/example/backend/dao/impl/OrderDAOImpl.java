@@ -1,16 +1,12 @@
 package com.example.backend.dao.impl;
 
-import com.example.backend.db.DBSource;
-import com.example.backend.dto.OrderItemsDTO;
-import com.example.backend.entity.Order;
 import com.example.backend.dao.interfaces.OrderDAO;
+import com.example.backend.db.DBSource;
+import com.example.backend.entity.Order;
 import com.example.backend.entity.OrderItems;
 
 import javax.naming.NamingException;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +21,7 @@ public class OrderDAOImpl implements OrderDAO<Order> {
             pst.setString(2, entity.getCustomer_id());
             pst.setDouble(3, entity.getOrder_total());
             pst.setDouble(4, entity.getDiscount());
-            pst.setDate(5, Date.valueOf(entity.getDate()));
+            pst.setDate(5, Date.valueOf(String.valueOf(entity.getDate())));
             boolean save = pst.executeUpdate() > 0;
             if (save) {
                 List<OrderItems> orders = entity.getItems();
@@ -75,11 +71,36 @@ public class OrderDAOImpl implements OrderDAO<Order> {
 
     @Override
     public Order findById(Order entity) throws SQLException, NamingException {
-        return null;
+        Connection connection = DBSource.getInstance().getConnection();
+        PreparedStatement pst = connection.prepareStatement("SELECT orders.ID, customer.Name, orders.order_total, orders.discount, orders.date  FROM orders LEFT JOIN customer on orders.CID = customer.id WHERE orders.ID=?");
+        pst.setString(1, entity.getId());
+        ResultSet resultSet = pst.executeQuery();
+        Order order = new Order();
+        if (resultSet.next()) {
+            order.setId(resultSet.getString(1));
+            order.setCustomer_id(resultSet.getString(2));
+            order.setOrder_total(resultSet.getDouble(3));
+            order.setDiscount(resultSet.getDouble(4));
+            order.setDate(resultSet.getDate(5).toLocalDate());
+        }
+        return order;
     }
 
     @Override
     public ArrayList<Order> findAll() throws SQLException, NamingException {
-        return null;
+        Connection connection = DBSource.getInstance().getConnection();
+        PreparedStatement pst = connection.prepareStatement("SELECT orders.ID, customer.Name, orders.order_total, orders.discount, orders.date  FROM orders LEFT JOIN customer on orders.CID = customer.id");
+        ResultSet resultSet = pst.executeQuery();
+        ArrayList<Order> orders = new ArrayList<>();
+        while (resultSet.next()) {
+            Order order = new Order();
+            order.setId(resultSet.getString(1));
+            order.setCustomer_id(resultSet.getString(2));
+            order.setOrder_total(resultSet.getDouble(3));
+            order.setDiscount(resultSet.getDouble(4));
+            order.setDate(resultSet.getDate(5).toLocalDate());
+            orders.add(order);
+        }
+        return orders;
     }
 }

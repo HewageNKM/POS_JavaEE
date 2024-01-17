@@ -2,11 +2,8 @@ package com.example.backend.service.impl;
 
 import com.example.backend.dto.OrderDTO;
 import com.example.backend.dto.OrderItemsDTO;
-import com.example.backend.dto.UserDTO;
 import com.example.backend.entity.Order;
 import com.example.backend.entity.OrderItems;
-import com.example.backend.entity.User;
-import com.example.backend.service.interfaces.LoginService;
 import com.example.backend.service.interfaces.OrderService;
 
 import javax.naming.NamingException;
@@ -26,9 +23,8 @@ public class OrderServiceImpl implements OrderService<OrderDTO> {
             for (OrderItemsDTO orderItemsDTO : orderItemsDTOS) {
                 orderItems.add(new OrderItems(orderItemsDTO.getItem_id(), orderItemsDTO.getItem_name(), orderItemsDTO.getItem_price(), orderItemsDTO.getItem_qty(), orderItemsDTO.getItem_total()));
             }
-            Order order = new Order(dto.getId(), dto.getCustomer_id(), orderItems ,dto.getOrder_total(), dto.getOrder_total(), LocalDateTime.now());
-            boolean save = orderDAO.save(order);
-            return save;
+            Order order = new Order(dto.getId(), dto.getCustomer_id(), orderItems ,dto.getOrder_total(), dto.getDiscount(), LocalDate.now());
+            return orderDAO.save(order);
         }else {
             return false;
         }
@@ -45,12 +41,17 @@ public class OrderServiceImpl implements OrderService<OrderDTO> {
     }
 
     @Override
-    public OrderDTO findById(OrderDTO dto) throws SQLException, NamingException {
+    public Object findById(OrderDTO dto) throws SQLException, NamingException {
+        if (dto.getId() != null) {
+           orderDAO.findById(new Order(dto.getId(), null, null, 0.0, 0.0, null));
+        } else {
+            return null;
+        }
         return null;
     }
 
     @Override
-    public ArrayList<OrderDTO> findAll() {
-        return null;
+    public ArrayList findAll() throws SQLException, NamingException {
+        return orderDAO.findAll();
     }
 }
