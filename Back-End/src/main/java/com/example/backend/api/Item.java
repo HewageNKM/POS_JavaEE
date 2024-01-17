@@ -24,84 +24,87 @@ public class Item extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String id = req.getParameter("id");
-        System.out.println("ID = " + id);
         try {
+            String id = req.getParameter("id");
             boolean delete = itemService.delete(new ItemDTO(id, null, 0.0, 0));
             if (delete) {
                 resp.getWriter().println(HttpServletResponse.SC_OK);
             } else {
                 resp.getWriter().println(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException | NamingException e) {
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             throw new RuntimeException(e);
         }
     }
 
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ItemDTO itemDTO = gson.fromJson(req.getReader(), ItemDTO.class);
-        System.out.println("itemDTO = " + itemDTO);
         try {
+            ItemDTO itemDTO = gson.fromJson(req.getReader(), ItemDTO.class);
             boolean update = itemService.update(itemDTO);
             if (update) {
                 resp.getWriter().println(HttpServletResponse.SC_OK);
             } else {
                 resp.getWriter().println(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException | NamingException e) {
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             throw new RuntimeException(e);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        ItemDTO itemDTO = gson.fromJson(req.getReader(), ItemDTO.class);
-        System.out.println("itemDTO = " + itemDTO);
         try {
+            ItemDTO itemDTO = gson.fromJson(req.getReader(), ItemDTO.class);
+
             boolean save = itemService.save(itemDTO);
             if (save) {
                 resp.getWriter().println(HttpServletResponse.SC_CREATED);
             } else {
                 resp.getWriter().println(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException | NamingException e) {
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             throw new RuntimeException(e);
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String volume = req.getParameter("volume");
-        switch (volume) {
-            case "all":
-                try {
-                    ArrayList<ItemDTO> all = itemService.findAll();
-                    System.out.println("all = " + all);
-                    String json = gson.toJson(all);
-                    resp.getWriter().println(json);
-                } catch (SQLException | NamingException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case "single":
-                try {
-                    ItemDTO itemDTO = new ItemDTO();
-                    itemDTO.setId(req.getParameter("id"));
-                    System.out.println(req.getParameter("id"));
-                    ItemDTO item = itemService.findById(itemDTO);
-                    if (item == null) {
-                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        try {
+            String volume = req.getParameter("volume");
+            switch (volume) {
+                case "all":
+                    try {
+                        ArrayList<ItemDTO> all = itemService.findAll();
+                        String json = gson.toJson(all);
+                        resp.getWriter().println(json);
+                    } catch (SQLException | NamingException e) {
+                        throw new RuntimeException(e);
                     }
-                    System.out.println("item = " + item);
-                    String json = gson.toJson(item);
-                    resp.getWriter().println(json);
-                } catch (SQLException | NamingException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            default:
-                break;
+                    break;
+                case "single":
+                    try {
+                        ItemDTO itemDTO = new ItemDTO();
+                        itemDTO.setId(req.getParameter("id"));
+                        ItemDTO item = itemService.findById(itemDTO);
+                        if (item == null) {
+                            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        }
+                        String json = gson.toJson(item);
+                        resp.getWriter().println(json);
+                    } catch (SQLException | NamingException e) {
+                        throw new RuntimeException(e);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            e.printStackTrace();
         }
     }
 }

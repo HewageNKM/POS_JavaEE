@@ -21,7 +21,7 @@ app.get('/login', function (req, res) {
         }
     }).then(function (response) {
         if (response.status === 200) {
-            res.status(200).sendFile(__dirname+'/public/views/orderForm.html');
+            res.status(200).sendFile(__dirname + '/public/views/homeForm.html');
         } else {
             res.send('Invalid User');
         }

@@ -12,6 +12,7 @@ import com.example.backend.service.interfaces.OrderService;
 import javax.naming.NamingException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class OrderServiceImpl implements OrderService<OrderDTO> {
             for (OrderItemsDTO orderItemsDTO : orderItemsDTOS) {
                 orderItems.add(new OrderItems(orderItemsDTO.getItem_id(), orderItemsDTO.getItem_name(), orderItemsDTO.getItem_price(), orderItemsDTO.getItem_qty(), orderItemsDTO.getItem_total()));
             }
-            Order order = new Order(dto.getId(), dto.getCustomer_id(), orderItems ,dto.getOrder_total(), dto.getOrder_total(),LocalDate.now());
+            Order order = new Order(dto.getId(), dto.getCustomer_id(), orderItems ,dto.getOrder_total(), dto.getOrder_total(), LocalDateTime.now());
             boolean save = orderDAO.save(order);
             return save;
         }else {

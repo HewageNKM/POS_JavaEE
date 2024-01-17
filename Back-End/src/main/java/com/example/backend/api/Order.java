@@ -10,9 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import javax.naming.NamingException;
 import java.io.IOException;
-import java.sql.SQLException;
 
 import static com.example.backend.service.ServiceFactory.ServiceType.ORDER;
 
@@ -33,15 +31,16 @@ public class Order extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        OrderDTO orderDTO = gson.fromJson(req.getReader(), OrderDTO.class);
         try {
+            OrderDTO orderDTO = gson.fromJson(req.getReader(), OrderDTO.class);
             boolean save = orderService.save(orderDTO);
             if (save) {
                 resp.getWriter().println(HttpServletResponse.SC_CREATED);
             } else {
                 resp.getWriter().println(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException | NamingException e) {
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             throw new RuntimeException(e);
         }
     }
