@@ -1,21 +1,29 @@
 
 # POS JavaEE
 
-Web application with Node.js for front-end and JavaEE for back-end.
+This is a Point of Sales System developed using JavaEE.
 
 
 ## Documentation
 
-- Start front-end server by nodemon app.js (nodemon must be instlled).
-- Start Tomcat server in the backend.
-- Note: Intellij IDE
-- Default username and password is root and 1234.
------
-## Reruire
-- MySQL
-- Node.js
-
-
+- Install MySQL and create a database called POS.
+- Create tables using the SQL script given below.
+- Install Node.js and run the following commands in the terminal.
+  ````
+    npm install -g serve
+-  In the Frontend folder run the following command.
+   ```` 
+    serve
+-  Run the project in the IDE.
+- Open the browser and go to http://localhost:3000 to access the application.
+- Use the following credentials to login.
+  ````
+    username: root
+    password: 1234
+-  You can change the credentials in reset form.
+- You can add new users using the application.
+- You can add new customers, items, orders and order details using the application.
+---
 ## Tables
 
 ```bash
