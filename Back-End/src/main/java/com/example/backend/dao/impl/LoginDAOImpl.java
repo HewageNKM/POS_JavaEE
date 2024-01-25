@@ -19,7 +19,6 @@ public class LoginDAOImpl implements LoginDAO<User> {
         pstm.setString(1, entity.getUserName());
         pstm.setObject(2, entity.getPassword());
         boolean b = pstm.executeUpdate() > 0;
-        connection.close();
         return b;
     }
 
