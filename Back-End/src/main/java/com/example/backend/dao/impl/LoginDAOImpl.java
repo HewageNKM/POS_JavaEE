@@ -19,7 +19,6 @@ public class LoginDAOImpl implements LoginDAO<User> {
         pstm.setString(1, entity.getUserName());
         pstm.setObject(2, entity.getPassword());
         boolean b = pstm.executeUpdate() > 0;
-        connection.close();
         return b;
     }
 
@@ -30,7 +29,6 @@ public class LoginDAOImpl implements LoginDAO<User> {
         pstm.setObject(1, entity.getPassword());
         pstm.setString(2, entity.getUserName());
         boolean b = pstm.executeUpdate() > 0;
-        connection.close();
         return b;
     }
 
@@ -45,7 +43,7 @@ public class LoginDAOImpl implements LoginDAO<User> {
     @Override
     public User findById(User entity) throws SQLException, NamingException {
         Connection connection = DBSource.getInstance().getConnection();
-        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM user WHERE userName=? and password=?");
+        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM user WHERE username=? and password=?");
         pstm.setString(1, entity.getUserName());
         pstm.setString(2, entity.getPassword());
         ResultSet resultSet = pstm.executeQuery();

@@ -5,7 +5,7 @@
          version="5.0">
     <context-param>
         <param-name>origin</param-name>
-        <param-value>http://localhost:5000</param-value>
+        <param-value>http://localhost</param-value>
     </context-param>
     <resource-ref>
         <description>

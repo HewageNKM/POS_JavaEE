@@ -6,12 +6,14 @@ import com.example.backend.service.impl.OrderServiceImpl;
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.example.backend.service.ServiceFactory.ServiceType.ORDER;
 
@@ -51,7 +53,7 @@ public class Order extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)  {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) {
         try {
             OrderDTO orderDTO = gson.fromJson(req.getReader(), OrderDTO.class);
             boolean save = orderService.save(orderDTO);

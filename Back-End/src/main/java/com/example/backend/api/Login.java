@@ -4,10 +4,14 @@ import com.example.backend.dto.UserDTO;
 import com.example.backend.service.ServiceFactory;
 import com.example.backend.service.impl.LoginServiceImpl;
 import com.google.gson.Gson;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 import static com.example.backend.service.ServiceFactory.ServiceType.LOGIN;
 
@@ -32,15 +36,16 @@ public class Login extends HttpServlet {
         }
     }
 
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         try {
             UserDTO userDTO = new Gson().fromJson(request.getReader(), UserDTO.class);
             boolean save = loginService.save(userDTO);
             if (save) {
-                response.sendRedirect("index.html");
+                response.setStatus(HttpServletResponse.SC_OK);
             } else {
-                response.sendRedirect("index.html");
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -48,4 +53,19 @@ public class Login extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            UserDTO userDTO = new Gson().fromJson(req.getReader(), UserDTO.class);
+            boolean save = loginService.update(userDTO);
+            if (save) {
+                resp.setStatus(HttpServletResponse.SC_OK);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            e.printStackTrace();
+        }
+    }
 }
