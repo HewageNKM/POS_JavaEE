@@ -45,7 +45,7 @@ public class LoginDAOImpl implements LoginDAO<User> {
     @Override
     public User findById(User entity) throws SQLException, NamingException {
         Connection connection = DBSource.getInstance().getConnection();
-        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM user WHERE userName=? and password=?");
+        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM user WHERE username=? and password=?");
         pstm.setString(1, entity.getUserName());
         pstm.setString(2, entity.getPassword());
         ResultSet resultSet = pstm.executeQuery();

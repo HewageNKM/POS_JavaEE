@@ -2,6 +2,7 @@ function loadOrderTable() {
     $.ajax({
         url: 'http://localhost:8080/api/order?volume=all',
         method: 'GET',
+        withCredentials: true,
         success: function (data) {
             data = JSON.parse(data);
             $('#orderTable').empty();
@@ -66,7 +67,8 @@ $('#searchBtn').on('click', function (event) {
         $.ajax({
             url: 'http://localhost:8080/api/order?volume=single&id='+$('#searchFld').val().trim().toLowerCase(),
             method: 'GET',
-            success: function (data) {
+            success: function (data, textStatus, http) {
+                console.log(http.status);
                 data = JSON.parse(data);
                 $('#orderTable').empty();
                 data.forEach(function (order) {
@@ -91,6 +93,7 @@ $('#searchBtn').on('click', function (event) {
                     });
                 });
             },error: function (error) {
+                console.log("Error "+error.status);
                 if (error.status === 404) {
                     alert("Order not found");
                 } else {
