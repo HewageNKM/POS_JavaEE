@@ -14,8 +14,8 @@ public class CORSFilter extends HttpFilter {
     @Override
     protected void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
         String origin = req.getHeader("Origin");
-        System.out.println("origin = " + origin);
         if (origin != null && origin.contains(getServletContext().getInitParameter("origin"))) {
+            System.out.println("origin = " + origin);
             res.setHeader("Access-Control-Allow-Origin", origin);
             res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
             res.setHeader("Access-Control-Allow-Headers", "Content-Type");

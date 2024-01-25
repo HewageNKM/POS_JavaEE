@@ -5,6 +5,7 @@ import com.example.backend.service.ServiceFactory;
 import com.example.backend.service.impl.LoginServiceImpl;
 import com.google.gson.Gson;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,6 +23,10 @@ public class Login extends HttpServlet {
             UserDTO userDTO = new UserDTO(id, password);
             UserDTO byId = loginService.findById(userDTO);
             if (byId != null) {
+                Cookie cookie = new Cookie("userName", byId.getUserName());
+                cookie.setMaxAge(60 * 60 * 24 * 30);
+                response.addCookie(cookie);
+                response.getWriter().println("public/views/homeForm.html");
                 response.setStatus(HttpServletResponse.SC_OK);
             } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -31,6 +36,7 @@ public class Login extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {

@@ -1,9 +1,6 @@
 function loadOrderTable() {
     $.ajax({
         url: 'http://localhost:8080/api/order?volume=all',
-        headers:{
-          Origin: 'http://localhost:5000/homeForm.html'
-        },
         method: 'GET',
         success: function (data) {
             data = JSON.parse(data);
@@ -49,9 +46,6 @@ $('#deleteBtn').on('click', function (event) {
     if (($('#orderId').val().trim().length > 0)) {
         $.ajax({
             type: 'DELETE',
-            headers: {
-                Origin: 'http://localhost:5000/homeForm.html'
-            },
             url: 'http://localhost:8080/api/order?id=' + $('#orderId').val().toLowerCase(),
             success: function (response) {
                 loadOrderTable();
@@ -71,9 +65,6 @@ $('#searchBtn').on('click', function (event) {
     if (($('#searchFld').val().trim().length >= 5)) {
         $.ajax({
             url: 'http://localhost:8080/api/order?volume=single&id='+$('#searchFld').val().trim().toLowerCase(),
-            headers:{
-                Origin: 'http://localhost:5000/homeForm.html'
-            },
             method: 'GET',
             success: function (data) {
                 data = JSON.parse(data);
